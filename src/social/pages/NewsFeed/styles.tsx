@@ -3,7 +3,7 @@ import CommunitySideMenu from '~/social/components/CommunitySideMenu';
 
 export const Wrapper = styled.div`
   height: 100%;
-  max-width: 550px;
+  // max-width: 550px;
   margin: 0 auto;
   padding: 28px 0;
   overflow-y: auto;
@@ -45,7 +45,7 @@ export const CommunitySideMenuOverlay = styled.div<{ isOpen: boolean }>`
   cursor: pointer;
 `;
 
-export const StyledCommunitySideMenu = styled(CommunitySideMenu)<{ isOpen: boolean }>`
+export const StyledCommunitySideMenu = styled(CommunitySideMenu) <{ isOpen: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
