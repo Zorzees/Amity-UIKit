@@ -490,6 +490,92 @@ export const defaultConfig: DefaultConfig = {
     'my_communities_search_page/top_search_bar/cancel_button': {
       text: 'Cancel',
     },
+    'community_profile_page/*/*': {},
+    'community_profile_page/community_feed/*': {},
+    '*/post_content/announcement_badge': {
+      image: 'value',
+    },
+    '*/post_content/pin_badge': {
+      image: 'value',
+    },
+    '*/post_content/non_member_section': {
+      image: 'value',
+    },
+    'community_profile_page/community_header/*': {},
+    'community_profile_page/community_header/community_cover': {},
+    'community_profile_page/community_header/community_name': {},
+    'community_profile_page/community_header/community_verify_badge': {
+      image: 'value',
+    },
+    'community_profile_page/community_header/community_category': {},
+    'community_profile_page/community_header/community_description': {},
+    'community_profile_page/community_header/community_info': {},
+    'community_profile_page/community_header/community_join_button': {
+      image: 'value',
+    },
+    'community_profile_page/community_header/community_pending_post': {
+      image: 'value',
+    },
+    'community_profile_page/community_header/back_button': {
+      image: 'value',
+    },
+    'community_profile_page/community_header/menu_button': {
+      image: 'value',
+    },
+    'community_profile_page/community_profile_tab/*': {},
+    'community_profile_page/community_profile_tab/community_feed_tab_button': {
+      image: 'value',
+    },
+    'community_profile_page/community_profile_tab/community_pin_tab_button': {
+      image: 'value',
+    },
+    'community_profile_page/community_pin/*': {},
+    'community_profile_page/community_pin/community_create_post_button': {
+      image: 'value',
+    },
+    'community_profile_page/post_content/*': {},
+    'social_home_page/explore_community_categories/*': {},
+    'social_home_page/recommended_communities/*': {},
+    'social_home_page/*/explore_empty_image': {
+      image: 'value',
+    },
+    'social_home_page/explore_empty/title': {
+      text: 'Your explore is empty',
+    },
+    'social_home_page/explore_empty/description': {
+      text: 'Find community or create your own',
+    },
+    'social_home_page/explore_empty/explore_create_community': {
+      text: 'Create community',
+    },
+    'social_home_page/explore_community_empty/title': {
+      text: 'No community yet',
+    },
+    'social_home_page/explore_community_empty/description': {
+      text: `Let's create your own communities`,
+    },
+    'social_home_page/explore_community_empty/explore_create_community': {
+      text: 'Create community',
+    },
+    'social_home_page/*/explore_trending_title': {
+      text: 'Trending now',
+    },
+    'social_home_page/*/explore_recommended_title': {
+      text: 'Recommended for you',
+    },
+    'social_home_page/trending_communities/*': {},
+    'all_categories_page/*/*': {},
+    'communities_by_category_page/*/*': {},
+    '*/*/community_join_button': {
+      text: 'Join',
+    },
+    '*/*/community_joined_button': {
+      text: 'Joined',
+    },
+    'communities_by_category_page/*/community_empty_image': {},
+    'communities_by_category_page/*/community_empty_title': {
+      text: 'No community yet',
+    },
   },
 };
 

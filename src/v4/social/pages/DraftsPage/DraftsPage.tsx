@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import {
   AspectRatioButton,
-  BackButton,
   HyperLinkButton,
   ShareStoryButton,
   HyperLink,
@@ -17,6 +16,7 @@ import { usePageBehavior } from '~/v4/core/providers/PageBehaviorProvider';
 import { PageTypes, useNavigation } from '~/v4/core/providers/NavigationProvider';
 import { VideoPreview } from '~/v4/social/internal-components/VideoPreview';
 import { useAmityPage } from '~/v4/core/hooks/uikit';
+import { RoundedBackButton } from '~/v4/social/elements/RoundedBackButton';
 import ColorThief from 'colorthief';
 
 import styles from './DraftsPage.module.css';
@@ -46,7 +46,7 @@ export const PlainDraftStoryPage = ({
   goToGlobalFeedPage: () => void;
   onDiscardCreateStory: () => void;
 }) => {
-  const { page } = useNavigation();
+  const { page, onBack } = useNavigation();
   const pageId = 'create_story_page';
   const { accessibilityId, themeStyles } = useAmityPage({
     pageId,
@@ -101,7 +101,7 @@ export const PlainDraftStoryPage = ({
       if (page.type === PageTypes.DraftPage && page.context.storyType === 'globalFeed') {
         goToGlobalFeedPage();
       } else {
-        goToCommunityPage(targetId);
+        onBack();
       }
       if (mediaType?.type === 'image' && targetId) {
         await StoryRepository.createImageStory(
@@ -212,7 +212,7 @@ export const PlainDraftStoryPage = ({
       <div id="asc-uikit-create-story" className={styles.draftPageContainer}>
         <div className={styles.headerContainer}>
           <div className={styles.header}>
-            <BackButton pageId={pageId} onPress={discardCreateStory} />
+            <RoundedBackButton pageId={pageId} onPress={discardCreateStory} />
             <div className={styles.topRightButtons}>
               {mediaType?.type === 'image' && (
                 <AspectRatioButton pageId={pageId} onPress={onClickImageMode} />
@@ -221,7 +221,6 @@ export const PlainDraftStoryPage = ({
             </div>
           </div>
         </div>
-
         {mediaType?.type === 'image' ? (
           <div
             className={styles.mainContainer}
@@ -267,7 +266,6 @@ export const PlainDraftStoryPage = ({
             </HyperLink>
           </div>
         )}
-
         <HyperLinkConfig
           pageId={pageId}
           isOpen={isHyperLinkBottomSheetOpen}
@@ -276,7 +274,6 @@ export const PlainDraftStoryPage = ({
           onRemove={onRemoveHyperLink}
           isHaveHyperLink={hyperLink?.[0]?.data?.url !== ''}
         />
-
         <div className={styles.footer}>
           <ShareStoryButton
             community={community}

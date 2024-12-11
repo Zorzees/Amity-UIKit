@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import useSDK from '~/v4/core/hooks/useSDK';
 import { LinkPreviewSkeleton } from './LinkPreviewSkeleton';
 import styles from './LinkPreview.module.css';
+import { Button } from '~/v4/core/natives/Button';
 
 const UnableToPreviewSvg = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -51,10 +52,12 @@ const usePreviewLink = ({ url }: { url: string }) => {
 };
 
 interface LinkPreviewProps {
+  pageId?: string;
+  componentId?: string;
   url: string;
 }
 
-export function LinkPreview({ url }: LinkPreviewProps) {
+export function LinkPreview({ pageId = '*', componentId = '*', url }: LinkPreviewProps) {
   const urlObject = new URL(url);
 
   const previewData = usePreviewLink({ url });
@@ -69,19 +72,23 @@ export function LinkPreview({ url }: LinkPreviewProps) {
 
   if (previewData.isError) {
     return (
-      <div onClick={handleClick} className={styles.linkPreview}>
+      <Button onPress={handleClick} className={styles.linkPreview}>
         <div className={styles.linkPreview__top}>
           <UnableToPreview />
         </div>
         <div className={styles.linkPreview__bottom}>
           <Typography.Caption>{urlObject.hostname}</Typography.Caption>
         </div>
-      </div>
+      </Button>
     );
   }
 
   return (
-    <div onClick={handleClick} className={styles.linkPreview}>
+    <Button
+      data-qa-anchor={`${pageId}/${componentId}/post_preview_link`}
+      onPress={handleClick}
+      className={styles.linkPreview}
+    >
       <div className={styles.linkPreview__top}>
         {previewData.data?.image ? (
           <object data={previewData.data.image} className={styles.linkPreview__object}>
@@ -97,6 +104,6 @@ export function LinkPreview({ url }: LinkPreviewProps) {
         <Typography.Caption>{urlObject.hostname}</Typography.Caption>
         <Typography.BodyBold>{previewData.data?.title || ''}</Typography.BodyBold>
       </div>
-    </div>
+    </Button>
   );
 }

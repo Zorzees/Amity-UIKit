@@ -47,14 +47,15 @@ export const Permissions = Object.freeze({
   DeleteUserFeedPostPermission: 'DELETE_USER_FEED_POST',
   EditUserFeedCommentPermission: 'EDIT_USER_FEED_COMMENT',
   DeleteUserFeedCommentPermission: 'DELETE_USER_FEED_COMMENT',
-  EditCommunityFeedPostPermission: 'EDIT_COMMUNITY_FEED_POST',
-  DeleteCommunityFeedPostPermission: 'DELETE_COMMUNITY_FEED_POST',
-  EditCommunityFeedCommentPermission: 'EDIT_COMMUNITY_FEED_COMMENT',
-  DeleteCommunityFeedCommentPermission: 'DELETE_COMMUNITY_FEED_COMMENT',
+  EditCommunityFeedPostPermission: 'EDIT_COMMUNITY_POST',
+  DeleteCommunityFeedPostPermission: 'DELETE_COMMUNITY_POST',
+  EditCommunityFeedCommentPermission: 'EDIT_COMMUNITY_COMMENT',
+  DeleteCommunityFeedCommentPermission: 'DELETE_COMMUNITY_COMMENT',
   CreateCommunityCategoryPermission: 'CREATE_COMMUNITY_CATEGORY',
   EditCommunityCategoryPermission: 'EDIT_COMMUNITY_CATEGORY',
   DeleteCommunityCategoryPermission: 'DELETE_COMMUNITY_CATEGORY',
   ManageStoryPermission: 'MANAGE_COMMUNITY_STORY',
+  CreatePivillegedPostPermission: 'CREATE_PRIVILEGED_POST',
 });
 
 export const MAXIMUM_MENTIONEES = 30;

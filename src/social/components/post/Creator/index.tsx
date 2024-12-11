@@ -120,9 +120,8 @@ const PostCreatorBar = ({
 
   // default to me
   if (targetType === 'global' || targetType === 'myFeed') {
-    /* eslint-disable no-param-reassign */
     targetType = 'user';
-    /* eslint-disable no-param-reassign */
+
     targetId = currentUserId || '';
   }
 
@@ -265,10 +264,7 @@ const PostCreatorBar = ({
   const backgroundImage = target.targetType === 'community' ? CommunityImage : UserImage;
 
   const CurrentTargetAvatar = (
-    <Avatar
-      avatar={targetUser?.avatarCustomUrl || avatarFileUrl || undefined}
-      backgroundImage={backgroundImage}
-    />
+    <Avatar avatar={user?.avatar?.fileUrl || undefined} backgroundImage={backgroundImage} />
   );
   const isDisabled =
     (!text && postImages.length === 0 && postVideos.length === 0 && postFiles.length === 0) ||
@@ -287,6 +283,16 @@ const PostCreatorBar = ({
         title: <FormattedMessage id="post.discard.title" />,
         content: <FormattedMessage id="post.discard.content" />,
         okText: <FormattedMessage id="general.action.discard" />,
+        onOk: () => {
+          clearAll();
+          setPostImages([]);
+          setPostVideos([]);
+          setPostFiles([]);
+          setIncomingImages([]);
+          setIncomingVideos([]);
+          setIncomingFiles([]);
+          setNavigationBlocker?.(null);
+        },
       });
     } else {
       setNavigationBlocker?.(null);
@@ -355,7 +361,6 @@ const PostCreatorBar = ({
                   setPostImages(uploaded);
                   setIncomingImages(uploading);
                 }}
-                onError={setError}
               />
               <VideosUploaded
                 files={incomingVideos}
@@ -366,7 +371,6 @@ const PostCreatorBar = ({
                   setPostVideos(uploaded);
                   setIncomingVideos(uploading);
                 }}
-                onError={setError}
               />
               <FilesUploaded
                 files={incomingFiles}
@@ -377,7 +381,6 @@ const PostCreatorBar = ({
                   setPostFiles(uploaded);
                   setIncomingFiles(uploading);
                 }}
-                onError={setError}
               />
             </UploadsContainer>
           }

@@ -1,0 +1,10 @@
+.communityPin__container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.communityPin__feed {
+  padding-bottom: 0.75rem;
+  background-color: var(--asc-color-base-shade4);
+}

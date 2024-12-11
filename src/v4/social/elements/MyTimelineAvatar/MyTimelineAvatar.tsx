@@ -9,7 +9,11 @@ interface MyTimelineAvatarProps {
   userId?: string | null;
 }
 
-export function MyTimelineAvatar({ pageId = '*', componentId = '*', userId }: MyTimelineAvatarProps) {
+export function MyTimelineAvatar({
+  pageId = '*',
+  componentId = '*',
+  userId,
+}: MyTimelineAvatarProps) {
   const elementId = 'my_timeline_avatar';
   const { accessibilityId, isExcluded } = useAmityElement({
     pageId,
@@ -20,7 +24,12 @@ export function MyTimelineAvatar({ pageId = '*', componentId = '*', userId }: My
   if (isExcluded) return null;
   return (
     <div className={styles.myTimelineAvatar} data-qa-anchor={accessibilityId}>
-      <UserAvatar className={styles.myTimelineAvatar__userAvatar} userId={userId} />
+      <UserAvatar
+        pageId={pageId}
+        componentId={componentId}
+        className={styles.myTimelineAvatar__userAvatar}
+        userId={userId}
+      />
     </div>
   );
 }

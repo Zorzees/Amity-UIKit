@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styles from './SelectPostTargetPage.module.css';
 import { useAmityPage } from '~/v4/core/hooks/uikit';
 import { CloseButton } from '~/v4/social/elements/CloseButton/CloseButton';
@@ -16,8 +16,12 @@ import { useUser } from '~/v4/core/hooks/objects/useUser';
 import { usePageBehavior } from '~/v4/core/providers/PageBehaviorProvider';
 import useSDK from '~/v4/core/hooks/useSDK';
 import { Mode } from '~/v4/social/pages/PostComposerPage/';
+import { Button } from '~/v4/core/natives/Button';
+import { canCreatePostCommunity } from '~/v4/social/utils';
 
 export function SelectPostTargetPage() {
+  const { client } = useSDK();
+
   const pageId = 'select_post_target_page';
   const { themeStyles } = useAmityPage({
     pageId,
@@ -27,43 +31,45 @@ export function SelectPostTargetPage() {
     queryParams: { sortBy: 'displayName', limit: 20, membership: 'member' },
   });
   const { AmityPostTargetSelectionPage } = usePageBehavior();
-  const intersectionRef = useRef<HTMLDivElement>(null);
+  const [intersectionNode, setIntersectionNode] = useState<HTMLDivElement | null>(null);
   const { currentUserId } = useSDK();
-  const { user } = useUser(currentUserId);
+  const { user } = useUser({ userId: currentUserId });
   useIntersectionObserver({
     onIntersect: () => {
       if (hasMore && isLoading === false) {
         loadMore();
       }
     },
-    ref: intersectionRef,
+    node: intersectionNode,
   });
 
-  const renderCommunity = communities.map((community) => {
-    return (
-      <div
-        onClick={() => {
-          AmityPostTargetSelectionPage?.goToPostComposerPage?.({
-            targetId: community.communityId,
-            targetType: 'community',
-            mode: Mode.CREATE,
-            community: community,
-          });
-        }}
-        key={community.communityId}
-        className={styles.selectPostTargetPage__timeline}
-      >
-        <div className={styles.selectPostTargetPage__communityAvatar}>
-          <CommunityAvatar pageId={pageId} community={community} />
+  const renderCommunity = communities
+    .filter((community) => canCreatePostCommunity(client, community))
+    .map((community) => {
+      return (
+        <div
+          onClick={() => {
+            AmityPostTargetSelectionPage?.goToPostComposerPage?.({
+              targetId: community.communityId,
+              targetType: 'community',
+              mode: Mode.CREATE,
+              community: community,
+            });
+          }}
+          key={community.communityId}
+          className={styles.selectPostTargetPage__timeline}
+        >
+          <div className={styles.selectPostTargetPage__communityAvatar}>
+            <CommunityAvatar pageId={pageId} community={community} />
+          </div>
+          <CommunityDisplayName pageId={pageId} community={community} />
+          <div>
+            {community.isOfficial && <CommunityOfficialBadge />}
+            {!community.isPublic && <CommunityPrivateBadge />}
+          </div>
         </div>
-        <CommunityDisplayName pageId={pageId} community={community} />
-        <div>
-          {community.isOfficial && <CommunityOfficialBadge />}
-          {!community.isPublic && <CommunityPrivateBadge />}
-        </div>
-      </div>
-    );
-  });
+      );
+    });
 
   return (
     <div className={styles.selectPostTargetPage} style={themeStyles}>
@@ -76,8 +82,8 @@ export function SelectPostTargetPage() {
         <Title pageId={pageId} titleClassName={styles.selectPostTargetPage__title} />
         <div />
       </div>
-      <div
-        onClick={() => {
+      <Button
+        onPress={() => {
           AmityPostTargetSelectionPage?.goToPostComposerPage?.({
             mode: Mode.CREATE,
             targetId: null,
@@ -89,11 +95,11 @@ export function SelectPostTargetPage() {
       >
         <MyTimelineAvatar pageId={pageId} userId={user?.userId} />
         <MyTimelineText pageId={pageId} />
-      </div>
+      </Button>
       <div className={styles.selectPostTargetPage__line} />
       <div className={styles.selectPostTargetPage__myCommunities}>My Communities</div>
       {renderCommunity}
-      <div ref={intersectionRef} />
+      <div ref={(node) => setIntersectionNode(node)} />
     </div>
   );
 }

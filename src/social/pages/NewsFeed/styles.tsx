@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import CommunitySideMenu from '~/social/components/CommunitySideMenu';
+import { BarsIcon } from '~/icons/index';
 
 export const Wrapper = styled.div`
   height: 100%;
@@ -8,14 +9,13 @@ export const Wrapper = styled.div`
   padding: 28px 0;
   overflow-y: auto;
 
-	& > div,
-	& > nav,
-	& > .infinite-scroll-component__outerdiv {
-		max-width:90ch;
-		margin-right:auto;
-		margin-left:auto;
-}
-
+  & > div,
+  & > nav,
+  & > .infinite-scroll-component__outerdiv {
+    max-width: 90ch;
+    margin-right: auto;
+    margin-left: auto;
+  }
 `;
 
 export const HeadTitle = styled.h2`
@@ -40,7 +40,9 @@ export const MobileContainer = styled.div`
   }
 `;
 
-export const CommunitySideMenuOverlay = styled.div<{ isOpen: boolean }>`
+export const CommunitySideMenuOverlay = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isOpen',
+})<{ isOpen?: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -50,11 +52,15 @@ export const CommunitySideMenuOverlay = styled.div<{ isOpen: boolean }>`
   z-index: 998;
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
-  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    visibility 0.3s ease-in-out;
   cursor: pointer;
 `;
 
-export const StyledCommunitySideMenu = styled(CommunitySideMenu) <{ isOpen: boolean }>`
+export const StyledCommunitySideMenu = styled(CommunitySideMenu).withConfig({
+  shouldForwardProp: (prop) => prop !== 'isOpen',
+})<{ isOpen?: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -63,4 +69,8 @@ export const StyledCommunitySideMenu = styled(CommunitySideMenu) <{ isOpen: bool
   z-index: 999;
   transform: translateX(${({ isOpen }) => (isOpen ? 0 : '-100%')});
   transition: transform 0.3s ease-in-out;
+`;
+
+export const StyledBarsIcon = styled(BarsIcon)`
+  cursor: pointer;
 `;

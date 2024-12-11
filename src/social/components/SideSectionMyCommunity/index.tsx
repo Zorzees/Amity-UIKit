@@ -1,5 +1,6 @@
 import React, { memo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { ModalContainer } from '~/core/components/ModalContainer';
 
 import SideMenuActionItem from '~/core/components/SideMenuActionItem';
 import SideMenuSection from '~/core/components/SideMenuSection';
@@ -45,7 +46,9 @@ const SideSectionMyCommunity = ({ className, activeCommunity }: SideSectionMyCom
         activeCommunity={activeCommunity}
       />
 
-      <CommunityCreationModal isOpen={isOpen} onClose={close} />
+      <ModalContainer>
+        <CommunityCreationModal isOpen={isOpen} onClose={close} />
+      </ModalContainer>
     </SideMenuSection>
   );
 };

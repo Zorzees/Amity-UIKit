@@ -36,17 +36,12 @@ interface CommunityFeedStoryProps {
   onClose: (communityId: string) => void;
   onSwipeDown: (communityId: string) => void;
   onClickCommunity: (communityId: string) => void;
-  goToDraftStoryPage: ({
-    targetId,
-    targetType,
-    mediaType,
-    storyType,
-  }: {
-    targetId: string;
-    targetType: string;
-    mediaType: any;
-    storyType: 'communityFeed' | 'globalFeed';
-  }) => void;
+  goToDraftStoryPage: (
+    targetId: string,
+    targetType: string,
+    mediaType: any,
+    storyType: 'communityFeed' | 'globalFeed',
+  ) => void;
 }
 
 const MIN_IMAGE_DURATION = 5000; // 5 seconds
@@ -75,7 +70,7 @@ export const CommunityFeedStory = ({
   const dragEventTarget = useRef(new EventTarget());
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
-  const { stories } = useGetActiveStoriesByTarget({
+  const { stories: storiesData } = useGetActiveStoriesByTarget({
     targetId: communityId,
     targetType: 'community',
     options: {
@@ -83,6 +78,22 @@ export const CommunityFeedStory = ({
       sortBy: 'createdAt',
     },
   });
+
+  const stories = storiesData.reduce(
+    (acc: (Amity.Ad | Amity.Story)[], current: Amity.Ad | Amity.Story) => {
+      const isDuplicate = acc.find((item) => {
+        if (isStory(item) && isStory(current)) {
+          return item.storyId === current.storyId;
+        }
+        return false;
+      });
+      if (!isDuplicate) {
+        acc.push(current);
+      }
+      return acc;
+    },
+    [],
+  );
 
   const communityFeedRenderers = useMemo(
     () =>
@@ -120,7 +131,7 @@ export const CommunityFeedStory = ({
 
   const nextStory = () => {
     if (currentIndex === stories.length - 1) {
-      onBack();
+      onClose(communityId);
       return;
     }
     setCurrentIndex(currentIndex + 1);
@@ -219,7 +230,7 @@ export const CommunityFeedStory = ({
 
   const increaseIndex = () => {
     if (currentIndex === stories.length - 1) {
-      onBack();
+      onClose(communityId);
       return;
     }
     setCurrentIndex((prevIndex) => prevIndex + 1);
@@ -302,14 +313,14 @@ export const CommunityFeedStory = ({
   });
 
   if (file) {
-    goToDraftStoryPage({
-      targetId: communityId,
-      targetType: 'community',
-      mediaType: file.type.includes('image')
+    goToDraftStoryPage(
+      communityId,
+      'community',
+      file.type.includes('image')
         ? { type: 'image', url: URL.createObjectURL(file) }
         : { type: 'video', url: URL.createObjectURL(file) },
-      storyType: 'communityFeed',
-    });
+      'communityFeed',
+    );
   }
 
   if (!stories || stories.length === 0) return null;

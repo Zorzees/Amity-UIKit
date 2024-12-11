@@ -1,6 +1,5 @@
-import '../../../core/providers/UiKitProvider/inter.css';
 import './index.css';
-import '../../styles/global.css';
+import '~/v4/styles/global.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import useUser from '~/core/hooks/useUser';
@@ -27,16 +26,138 @@ import { defaultConfig, Config, CustomizationProvider } from './CustomizationPro
 import { ThemeProvider } from './ThemeProvider';
 import { PageBehavior, PageBehaviorProvider } from './PageBehaviorProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AmityUIKitManager } from '../AmityUIKitManager';
+import { AmityUIKitManager } from '~/v4/core/AmityUIKitManager';
 import { ConfirmProvider } from '~/v4/core/providers/ConfirmProvider';
 import { ConfirmProvider as LegacyConfirmProvider } from '~/core/providers/ConfirmProvider';
-import { NotificationProvider } from '~/v4/core/providers/NotificationProvider';
+import { NotificationProvider, useNotifications } from '~/v4/core/providers/NotificationProvider';
 import { DrawerProvider } from '~/v4/core/providers/DrawerProvider';
 import { NotificationProvider as LegacyNotificationProvider } from '~/core/providers/NotificationProvider';
 import { CustomReactionProvider } from './CustomReactionProvider';
 import { AdEngineProvider } from './AdEngineProvider';
-import { AdEngine } from '../AdEngine';
+import { AdEngine } from '~/v4/core/AdEngine';
 import { GlobalFeedProvider } from '~/v4/social/providers/GlobalFeedProvider';
+
+const InternalComponent = ({
+  apiKey,
+  apiRegion,
+  apiEndpoint,
+  userId,
+  displayName,
+  postRendererConfig,
+  theme = {},
+  children /* TODO localization */,
+  socialCommunityCreationButtonVisible,
+  pageBehavior,
+  onConnectionStatusChange,
+  onDisconnected,
+  getAuthToken,
+  configs,
+}: AmityUIKitProviderProps) => {
+  const queryClient = new QueryClient();
+  const [client, setClient] = useState<Amity.Client | null>(null);
+  const currentUser = useUser(userId);
+
+  const { error } = useNotifications();
+
+  const sdkContextValue = useMemo(
+    () => ({
+      client,
+      currentUserId: userId || undefined,
+      userRoles: currentUser?.roles || [],
+    }),
+    [client, userId, currentUser?.roles],
+  );
+
+  useEffect(() => {
+    const setup = async () => {
+      let authToken;
+
+      if (getAuthToken) {
+        authToken = await getAuthToken();
+      }
+
+      try {
+        // Set up the AmityUIKitManager
+        AmityUIKitManager.setup({ apiKey, apiRegion, apiEndpoint });
+
+        AdEngine.instance;
+
+        // Register the device and get the client instance
+        await AmityUIKitManager.registerDevice(
+          userId,
+          displayName || userId,
+          {
+            sessionWillRenewAccessToken: (renewal) => {
+              // Handle access token renewal
+              if (getAuthToken) {
+                getAuthToken().then((newToken) => {
+                  renewal.renewWithAuthToken(newToken);
+                });
+              } else {
+                renewal.renew();
+              }
+            },
+          },
+          authToken,
+          onConnectionStatusChange,
+          onDisconnected,
+        );
+
+        const newClient = AmityUIKitManager.getClient();
+        setClient(newClient);
+      } catch (_error) {
+        console.error('Error setting up AmityUIKitManager:', _error);
+        if (_error instanceof Error) {
+          error({
+            content: _error.message,
+          });
+        }
+      }
+    };
+
+    setup();
+  }, [userId, displayName, onConnectionStatusChange, onDisconnected]);
+
+  if (!client) return null;
+
+  return (
+    <div className="asc-uikit">
+      <QueryClientProvider client={queryClient}>
+        <CustomizationProvider initialConfig={configs || defaultConfig}>
+          <CustomReactionProvider>
+            <AdEngineProvider>
+              <SDKContextV3.Provider value={sdkContextValue}>
+                <SDKContext.Provider value={sdkContextValue}>
+                  <SDKConnectorProviderV3>
+                    <SDKConnectorProvider>
+                      <ConfigProvider
+                        config={{
+                          socialCommunityCreationButtonVisible:
+                            socialCommunityCreationButtonVisible || true,
+                        }}
+                      >
+                        <PostRendererProvider config={postRendererConfig}>
+                          <NavigationProvider>
+                            <PageBehaviorProvider pageBehavior={pageBehavior}>
+                              <DrawerProvider>
+                                <GlobalFeedProvider>{children}</GlobalFeedProvider>
+                                <DrawerContainer />
+                              </DrawerProvider>
+                            </PageBehaviorProvider>
+                          </NavigationProvider>
+                        </PostRendererProvider>
+                      </ConfigProvider>
+                    </SDKConnectorProvider>
+                  </SDKConnectorProviderV3>
+                </SDKContext.Provider>
+              </SDKContextV3.Provider>
+            </AdEngineProvider>
+          </CustomReactionProvider>
+        </CustomizationProvider>
+      </QueryClientProvider>
+    </div>
+  );
+};
 
 export type AmityUIKitConfig = Config;
 
@@ -47,9 +168,8 @@ interface AmityUIKitProviderProps {
     http?: string;
     mqtt?: string;
   };
-  authToken?: string;
   userId: string;
-  displayName: string;
+  displayName?: string;
   postRendererConfig?: any;
   theme?: Record<string, unknown>;
   children?: React.ReactNode;
@@ -68,130 +188,31 @@ interface AmityUIKitProviderProps {
   onConnectionStatusChange?: (state: Amity.SessionStates) => void;
   onConnected?: () => void;
   onDisconnected?: () => void;
+  getAuthToken?: () => Promise<string>;
   configs?: AmityUIKitConfig;
 }
 
-const AmityUIKitProvider: React.FC<AmityUIKitProviderProps> = ({
-  apiKey,
-  apiRegion,
-  apiEndpoint,
-  authToken,
-  userId,
-  displayName,
-  postRendererConfig,
-  theme = {},
-  children /* TODO localization */,
-  socialCommunityCreationButtonVisible,
-  pageBehavior,
-  onConnectionStatusChange,
-  onDisconnected,
-  configs,
-}) => {
-  const queryClient = new QueryClient();
-  const [client, setClient] = useState<Amity.Client | null>(null);
-  const currentUser = useUser(userId);
-
-  const sdkContextValue = useMemo(
-    () => ({
-      client,
-      currentUserId: userId || undefined,
-      userRoles: currentUser?.roles || [],
-    }),
-    [client, userId, currentUser?.roles],
-  );
-
-  useEffect(() => {
-    const setup = async () => {
-      try {
-        // Set up the AmityUIKitManager
-        AmityUIKitManager.setup({ apiKey, apiRegion, apiEndpoint });
-
-        AdEngine.instance;
-
-        // Register the device and get the client instance
-        await AmityUIKitManager.registerDevice(
-          userId,
-          displayName || userId,
-          {
-            sessionWillRenewAccessToken: (renewal) => {
-              // Handle access token renewal
-              if (authToken) {
-                renewal.renewWithAuthToken(authToken);
-              } else {
-                renewal.renew();
-              }
-            },
-          },
-          onConnectionStatusChange,
-          onDisconnected,
-        );
-
-        const newClient = AmityUIKitManager.getClient();
-        setClient(newClient);
-      } catch (error) {
-        console.error('Error setting up AmityUIKitManager:', error);
-      }
-    };
-
-    setup();
-  }, [userId, displayName, authToken, onConnectionStatusChange, onDisconnected]);
-
-  if (!client) return null;
-
+const AmityUIKitProvider: React.FC<AmityUIKitProviderProps> = (props) => {
   return (
-    <div className="asc-uikit">
-      <QueryClientProvider client={queryClient}>
-        <Localization locale="en">
-          <CustomizationProvider initialConfig={configs || defaultConfig}>
-            <StyledThemeProvider theme={buildGlobalTheme(theme)}>
-              <ThemeProvider>
-                <CustomReactionProvider>
-                  <AdEngineProvider>
-                    <SDKContextV3.Provider value={sdkContextValue}>
-                      <SDKContext.Provider value={sdkContextValue}>
-                        <SDKConnectorProviderV3>
-                          <SDKConnectorProvider>
-                            <NotificationProvider>
-                              <DrawerProvider>
-                                <LegacyNotificationProvider>
-                                  <ConfirmProvider>
-                                    <LegacyConfirmProvider>
-                                      <ConfigProvider
-                                        config={{
-                                          socialCommunityCreationButtonVisible:
-                                            socialCommunityCreationButtonVisible || true,
-                                        }}
-                                      >
-                                        <PostRendererProvider config={postRendererConfig}>
-                                          <NavigationProvider>
-                                            <PageBehaviorProvider pageBehavior={pageBehavior}>
-                                              <GlobalFeedProvider>{children}</GlobalFeedProvider>
-                                            </PageBehaviorProvider>
-                                          </NavigationProvider>
-                                        </PostRendererProvider>
-                                      </ConfigProvider>
-                                      <NotificationsContainer />
-                                      <LegacyNotificationsContainer />
-                                      <ConfirmComponent />
-                                      <DrawerContainer />
-                                      <LegacyConfirmComponent />
-                                    </LegacyConfirmProvider>
-                                  </ConfirmProvider>
-                                </LegacyNotificationProvider>
-                              </DrawerProvider>
-                            </NotificationProvider>
-                          </SDKConnectorProvider>
-                        </SDKConnectorProviderV3>
-                      </SDKContext.Provider>
-                    </SDKContextV3.Provider>
-                  </AdEngineProvider>
-                </CustomReactionProvider>
-              </ThemeProvider>
-            </StyledThemeProvider>
-          </CustomizationProvider>
-        </Localization>
-      </QueryClientProvider>
-    </div>
+    <Localization locale="en">
+      <ThemeProvider>
+        <StyledThemeProvider theme={buildGlobalTheme(props.theme)}>
+          <NotificationProvider>
+            <LegacyNotificationProvider>
+              <ConfirmProvider>
+                <LegacyConfirmProvider>
+                  <InternalComponent {...props} />
+                  <NotificationsContainer />
+                  <LegacyNotificationsContainer />
+                  <ConfirmComponent />
+                  <LegacyConfirmComponent />
+                </LegacyConfirmProvider>
+              </ConfirmProvider>
+            </LegacyNotificationProvider>
+          </NotificationProvider>
+        </StyledThemeProvider>
+      </ThemeProvider>
+    </Localization>
   );
 };
 

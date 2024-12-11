@@ -9,6 +9,10 @@ import { Button } from '~/v4/core/natives/Button';
 import styles from './PostMenu.module.css';
 import { usePostFlaggedByMe } from '~/v4/core/hooks/usePostFlaggedByMe';
 import useCommunity from '~/v4/core/hooks/collections/useCommunity';
+import { usePageBehavior } from '~/v4/core/providers/PageBehaviorProvider';
+import { Mode } from '~/v4/social/pages/PostComposerPage';
+import { useDrawer } from '~/v4/core/providers/DrawerProvider';
+import { Typography } from '~/v4/core/components';
 
 const PenSvg = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -76,6 +80,8 @@ export const PostMenu = ({
   });
 
   const { isCommunityModerator, isOwner } = usePostPermissions({ post, community });
+  const { AmityPostContentComponentBehavior } = usePageBehavior();
+  const { removeDrawerData } = useDrawer();
 
   const { showEditPostButton, showDeletePostButton, showReportPostButton } = useMemo(() => {
     if (isCommunityModerator) {
@@ -113,16 +119,16 @@ export const PostMenu = ({
     post,
     isFlaggable: showReportPostButton,
     onReportSuccess: () => {
-      success({ content: 'Post reported' });
+      success({ content: 'Post reported.' });
     },
     onReportError: () => {
-      error({ content: 'Failed to report post' });
+      error({ content: 'Failed to report post.' });
     },
     onUnreportSuccess: () => {
-      success({ content: 'Post unreported' });
+      success({ content: 'Post unreported.' });
     },
     onUnreportError: () => {
-      error({ content: 'Failed to unreport post' });
+      error({ content: 'Failed to unreport post.' });
     },
   });
 
@@ -134,11 +140,11 @@ export const PostMenu = ({
       return PostRepository.hardDeletePost(post.postId);
     },
     onSuccess: () => {
-      success({ content: 'Post deleted' });
+      success({ content: 'Post deleted.' });
       onPostDeleted?.(post);
     },
     onError: () => {
-      error({ content: 'Failed to delete post' });
+      error({ content: 'Failed to delete post.' });
     },
   });
 
@@ -157,12 +163,9 @@ export const PostMenu = ({
 
   return (
     <div className={styles.postMenu}>
-      {/* <button className={styles.postMenu__item} onClick={onEdit}>
-        <PenSvg className={styles.postMenu__editPost__icon} />
-        <span>Edit post</span>
-      </button> */}
       {showReportPostButton && !isLoading ? (
         <Button
+          data-qa-anchor={`${pageId}/${componentId}/report_post_button`}
           className={styles.postMenu__item}
           onPress={() => {
             if (isFlaggedByMe) {
@@ -170,18 +173,41 @@ export const PostMenu = ({
             } else {
               mutateReportPost();
             }
+            removeDrawerData();
           }}
         >
           <FlagSvg className={styles.postMenu__reportPost__icon} />
-          <span className={styles.postMenu__reportPost__text}>
+          <Typography.Title className={styles.postMenu__reportPost__text}>
             {isFlaggedByMe ? 'Unreport post' : 'Report post'}
-          </span>
+          </Typography.Title>
+        </Button>
+      ) : null}
+      {showEditPostButton ? (
+        <Button
+          data-qa-anchor={`${pageId}/${componentId}/edit_post`}
+          className={styles.postMenu__item}
+          onPress={() => {
+            removeDrawerData();
+            AmityPostContentComponentBehavior?.goToPostComposerPage?.({
+              mode: Mode.EDIT,
+              post,
+            });
+          }}
+        >
+          <PenSvg className={styles.postMenu__editPost__icon} />
+          <Typography.Title className={styles.postMenu__editPost__text}>Edit post</Typography.Title>
         </Button>
       ) : null}
       {showDeletePostButton ? (
-        <Button className={styles.postMenu__item} onPress={() => onDeleteClick()}>
+        <Button
+          data-qa-anchor={`${pageId}/${componentId}/delete_post`}
+          className={styles.postMenu__item}
+          onPress={() => onDeleteClick()}
+        >
           <TrashSvg className={styles.postMenu__deletePost__icon} />
-          <span className={styles.postMenu__deletePost__text}>Delete post</span>
+          <Typography.Title className={styles.postMenu__deletePost__text}>
+            Delete post
+          </Typography.Title>
         </Button>
       ) : null}
     </div>

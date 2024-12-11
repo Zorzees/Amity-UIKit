@@ -140,6 +140,8 @@ const MyFeed = ({
     membership: 'member',
   });
 
+  const { prependItem } = useFeed();
+
   const loadMoreCommunitiesCB = useCallback(() => {
     loadMoreCommunities?.();
   }, [loadMoreCommunities]);
@@ -158,7 +160,7 @@ const MyFeed = ({
         enablePostTargetPicker={false}
         hasMoreCommunities={hasMoreCommunities}
         loadMoreCommunities={loadMoreCommunitiesCB}
-        onCreateSuccess={onPostCreated}
+        onCreateSuccess={(newPost) => onPostCreated || prependItem(newPost)}
       />
       <FeedScrollContainer
         className={className}
@@ -239,10 +241,7 @@ const CommunityFeed = ({
     feedType,
   });
 
-  useCommunitySubscription({
-    communityId: targetId,
-    level: SubscriptionLevels.COMMUNITY,
-  });
+  const { prependItem } = useFeed();
 
   function renderLoadingSkeleton() {
     return new Array(3).fill(3).map((_, index) => <DefaultPostRenderer key={index} loading />);
@@ -256,7 +255,7 @@ const CommunityFeed = ({
           targetType={targetType}
           targetId={targetId}
           enablePostTargetPicker={false}
-          onCreateSuccess={onPostCreated}
+          onCreateSuccess={(newPost) => onPostCreated || prependItem(newPost)}
         />
       ) : null}
       <FeedScrollContainer
@@ -344,6 +343,8 @@ const BaseFeed = ({
     membership: 'member',
   });
 
+  const { prependItem } = useFeed();
+
   function renderLoadingSkeleton() {
     return new Array(3).fill(3).map((_, index) => <DefaultPostRenderer key={index} loading />);
   }
@@ -359,7 +360,7 @@ const BaseFeed = ({
           enablePostTargetPicker={false}
           hasMoreCommunities={hasMoreCommunities}
           loadMoreCommunities={loadMoreCommunities}
-          onCreateSuccess={onPostCreated}
+          onCreateSuccess={(newPost) => onPostCreated || prependItem(newPost)}
         />
       )}
       <FeedScrollContainer

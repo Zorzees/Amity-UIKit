@@ -6,7 +6,7 @@ import { CommunitySearchResult } from '~/v4/social/components/CommunitySearchRes
 import { TabsBar } from '~/v4/social/internal-components/TabsBar';
 import useCommunitiesCollection from '~/v4/core/hooks/collections/useCommunitiesCollection';
 import { useAmityPage } from '~/v4/core/hooks/uikit';
-import { UserSearchResult } from '../../components/UserSearchResult';
+import { UserSearchResult } from '~/v4/social/components/UserSearchResult';
 import { useUserQueryByDisplayName } from '~/v4/core/hooks/collections/useUsersCollection';
 
 enum AmityGlobalSearchType {
@@ -106,6 +106,7 @@ export function SocialGlobalSearchPage() {
       {searchValue.length > 0 && (
         <TabsBar
           pageId={pageId}
+          componentId="top_search_bar"
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={(newTab) => {

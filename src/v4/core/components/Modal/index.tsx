@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useRef } from 'react';
 import styles from './styles.module.css';
 import clsx from 'clsx';
 import Close from '~/v4/icons/Close';
-import { useAmityElement } from '../../hooks/uikit';
+import { useAmityElement } from '~/v4/core/hooks/uikit';
 
 export interface ModalProps {
   pageId?: string;
@@ -45,10 +45,25 @@ const Modal = ({
         ref={modalRef}
         tabIndex={0}
       >
-        {onCancel && <Close className={styles.closeIcon} onClick={onCancel} />}
-        {title && <div className={styles.title}>{title}</div>}
+        {onCancel && (
+          <Close
+            data-qa-anchor={`${pageId}/${componentId}/modal_close_icon`}
+            className={styles.closeIcon}
+            onClick={onCancel}
+          />
+        )}
+        {title && (
+          <div data-qa-anchor={`${pageId}/${componentId}/modal_title`} className={styles.title}>
+            {title}
+          </div>
+        )}
 
-        <div className={clsx(styles.content)}>{children}</div>
+        <div
+          data-qa-anchor={`${pageId}/${componentId}/modal_content`}
+          className={clsx(styles.content)}
+        >
+          {children}
+        </div>
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>
     </div>

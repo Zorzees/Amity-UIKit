@@ -1,12 +1,16 @@
-import React, { useRef } from 'react';
-import { PostContent, PostContentSkeleton } from '../PostContent';
+import React, { useState } from 'react';
+import { PostContent, PostContentSkeleton } from '~/v4/social/components/PostContent';
 import { EmptyNewsfeed } from '~/v4/social/components/EmptyNewsFeed/EmptyNewsFeed';
 import useIntersectionObserver from '~/v4/core/hooks/useIntersectionObserver';
 import { usePageBehavior } from '~/v4/core/providers/PageBehaviorProvider';
-
-import styles from './GlobalFeed.module.css';
 import { useAmityComponent } from '~/v4/core/hooks/uikit';
 import { PostAd } from '~/v4/social/internal-components/PostAd/PostAd';
+import {
+  AmityPostCategory,
+  AmityPostContentComponentStyle,
+} from '~/v4/social/components/PostContent/PostContent';
+import { ClickableArea } from '~/v4/core/natives/ClickableArea';
+import styles from './GlobalFeed.module.css';
 
 interface GlobalFeedProps {
   pageId?: string;
@@ -34,12 +38,12 @@ export const GlobalFeed = ({
     componentId,
   });
 
-  const intersectionRef = useRef<HTMLDivElement>(null);
+  const [intersectionNode, setIntersectionNode] = useState<HTMLDivElement | null>(null);
 
   const { AmityGlobalFeedComponentBehavior } = usePageBehavior();
 
   useIntersectionObserver({
-    ref: intersectionRef,
+    node: intersectionNode,
     onIntersect: () => {
       onFeedReachBottom();
     },
@@ -63,36 +67,49 @@ export const GlobalFeed = ({
   return (
     <div className={styles.global_feed} style={themeStyles} data-qa-anchor={accessibilityId}>
       {items.map((item, index) => (
-        <div key={getItemKey(item, items[Math.max(0, index - 1)])}>
+        <React.Fragment key={getItemKey(item, items[Math.max(0, index - 1)])}>
           {index !== 0 ? <div className={styles.global_feed__divider} /> : null}
           {isAmityAd(item) ? (
             <PostAd ad={item} />
           ) : (
-            <div className={styles.global_feed__postContainer}>
+            <ClickableArea
+              elementType="div"
+              className={styles.global_feed__postContainer}
+              onPress={() =>
+                AmityGlobalFeedComponentBehavior?.goToPostDetailPage?.({ postId: item.postId })
+              }
+            >
               <PostContent
                 pageId={pageId}
                 post={item}
-                type="feed"
+                category={AmityPostCategory.GENERAL}
+                style={AmityPostContentComponentStyle.FEED}
                 onClick={() => {
                   AmityGlobalFeedComponentBehavior?.goToPostDetailPage?.({ postId: item.postId });
                 }}
                 onPostDeleted={onPostDeleted}
               />
-            </div>
+            </ClickableArea>
           )}
-        </div>
+        </React.Fragment>
       ))}
+      {items.length > 0 ? <div className={styles.global_feed__divider} /> : null}
       {isLoading
         ? Array.from({ length: 2 }).map((_, index) => (
             <div key={index}>
-              <div className={styles.global_feed__divider} />
               <div className={styles.global_feed__postSkeletonContainer}>
                 <PostContentSkeleton />
               </div>
+              {index !== 1 ? <div className={styles.global_feed__divider} /> : null}
             </div>
           ))
         : null}
-      {!isLoading && <div ref={intersectionRef} className={styles.global_feed__intersection} />}
+      {!isLoading && (
+        <div
+          ref={(node) => setIntersectionNode(node)}
+          className={styles.global_feed__intersection}
+        />
+      )}
     </div>
   );
 };

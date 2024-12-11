@@ -8,7 +8,9 @@ import LiveBadge from '~/social/components/LiveBadge';
 
 import { ExclamationCircle, Play, Remove } from '~/icons';
 
-export const VideoContainer = styled.div<{ border?: boolean }>`
+export const VideoContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'border',
+})<{ border?: boolean }>`
   position: relative;
   display: inline-block;
   min-width: 2em;
@@ -83,7 +85,7 @@ export const VideoSkeleton = () => (
   </SizeMe>
 );
 
-const StyledRemoveIcon = styled(Remove).attrs<{ icon?: ReactNode }>({width: 24, height: 24})``;
+const StyledRemoveIcon = styled(Remove).attrs<{ icon?: ReactNode }>({ width: 24, height: 24 })``;
 
 export const RemoveButton = styled(Button).attrs<{
   variant?: string;

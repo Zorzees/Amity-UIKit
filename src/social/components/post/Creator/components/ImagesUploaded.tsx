@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { css } from 'styled-components';
 
 import GalleryGrid from '~/core/components/GalleryGrid';
 import Image from '~/core/components/Uploaders/Image';
 import useFileUpload, { isAmityFile } from '~/core/hooks/useFileUpload';
+import { useConfirmContext } from '~/core/providers/ConfirmProvider';
 
 const StyledGalleryGrid = styled(GalleryGrid)<
   { uploadLoading?: boolean } & React.ComponentProps<typeof GalleryGrid<Amity.File | File>>
@@ -68,10 +69,17 @@ interface ImagesUploadedProps {
   onChange: (data: { uploaded: Array<Amity.File>; uploading: Array<File> }) => void;
   onLoadingChange: (loading: boolean) => void;
   uploadLoading: boolean;
-  onError: (error: string) => void;
+  onError?: (error: string) => void;
 }
 
-const ImagesUploaded = ({ files, uploadedFiles, onChange, onLoadingChange, uploadLoading, onError }: ImagesUploadedProps) => {
+const ImagesUploaded = ({
+  files,
+  uploadedFiles,
+  onChange,
+  onLoadingChange,
+  uploadLoading,
+  onError,
+}: ImagesUploadedProps) => {
   const useFileUploadProps = useFileUpload({
     files,
     uploadedFiles,
@@ -80,11 +88,26 @@ const ImagesUploaded = ({ files, uploadedFiles, onChange, onLoadingChange, uploa
     onError,
   });
 
-  const { allFiles } = useFileUploadProps;
+  const { info } = useConfirmContext();
+
+  const { allFiles, rejected, reset } = useFileUploadProps;
+
+  useEffect(() => {
+    if (rejected && rejected.length > 0) {
+      info({
+        title: 'Error',
+        content: 'There was an issue uploading media. Please try again later.',
+        onOk: () => reset(),
+        okText: 'Discard',
+        onCancel: () => reset(),
+        OkButton: undefined,
+      });
+    }
+  }, [rejected]);
 
   if (allFiles.length === 0) return null;
 
-  return <ImagesGallery {...useFileUploadProps} uploadLoading={uploadLoading} />
+  return <ImagesGallery {...useFileUploadProps} uploadLoading={uploadLoading} />;
 };
 
 export default ImagesUploaded;

@@ -5,7 +5,7 @@ import { HeaderLabel } from '~/v4/social/elements/HeaderLabel';
 import styles from './TopNavigation.module.css';
 import { useAmityComponent } from '~/v4/core/hooks/uikit';
 import { useNavigation } from '~/v4/core/providers/NavigationProvider';
-import { HomePageTab } from '../../pages/SocialHomePage/SocialHomePage';
+import { HomePageTab } from '~/v4/social/pages/SocialHomePage/SocialHomePage';
 
 export interface TopNavigationProps {
   pageId?: string;
@@ -28,9 +28,8 @@ export function TopNavigation({
   const handleGlobalSearchClick = () => {
     switch (selectedTab) {
       case HomePageTab.Newsfeed:
-        goToSocialGlobalSearchPage();
-        break;
       case HomePageTab.Explore:
+        goToSocialGlobalSearchPage();
         break;
       case HomePageTab.MyCommunities:
         goToMyCommunitiesSearchPage();
@@ -51,11 +50,13 @@ export function TopNavigation({
           componentId={componentId}
           onPress={handleGlobalSearchClick}
         />
-        <PostCreationButton
-          pageId={pageId}
-          componentId={componentId}
-          onClick={onClickPostCreationButton}
-        />
+        {selectedTab !== HomePageTab.Explore && (
+          <PostCreationButton
+            pageId={pageId}
+            componentId={componentId}
+            onClick={onClickPostCreationButton}
+          />
+        )}
       </div>
     </div>
   );

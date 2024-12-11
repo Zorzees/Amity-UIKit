@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { useGetActiveStoriesByTarget } from '~/v4/social/hooks/useGetActiveStories';
 import useSDK from '~/v4/core/hooks/useSDK';
 import { useUser } from '~/v4/core/hooks/objects/useUser';
-import { isAdmin, isModerator } from '~/v4/utils/permissions';
+import { isAdmin } from '~/v4/utils/permissions';
 import { checkStoryPermission } from '~/v4/social/utils';
 import { useCommunityInfo } from '~/v4/social/hooks/useCommunityInfo';
 import { CreateNewStoryButton } from '~/v4/social/elements/CreateNewStoryButton';
@@ -63,11 +63,9 @@ export const StoryTabCommunityFeed: React.FC<StoryTabCommunityFeedProps> = ({
   const { community } = useCommunityInfo(communityId);
 
   const { currentUserId, client } = useSDK();
-  const { user } = useUser(currentUserId);
+  const { user } = useUser({ userId: currentUserId });
   const isGlobalAdmin = isAdmin(user?.roles);
-  const isCommunityModerator = isModerator(user?.roles);
-  const hasStoryPermission =
-    isGlobalAdmin || isCommunityModerator || checkStoryPermission(client, communityId);
+  const hasStoryPermission = isGlobalAdmin || checkStoryPermission(client, communityId);
   const hasStories = stories?.length > 0;
   const hasUnSeen = stories.some((story) => !story?.isSeen);
   const uploading = stories.some((story) => story?.syncState === 'syncing');
@@ -117,7 +115,12 @@ export const StoryTabCommunityFeed: React.FC<StoryTabCommunityFeedProps> = ({
         {isErrored && <ErrorIcon className={clsx(styles.errorIcon)} />}
       </div>
       <Truncate lines={1}>
-        <div className={clsx(styles.storyTitle)}>Story</div>
+        <div
+          data-qa-anchore={`${pageId}/${componentId}/story_title`}
+          className={clsx(styles.storyTitle)}
+        >
+          Story
+        </div>
       </Truncate>
     </div>
   );

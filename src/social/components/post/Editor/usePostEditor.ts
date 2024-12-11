@@ -1,12 +1,11 @@
 import { PostRepository } from '@amityco/ts-sdk';
 import { useMemo, useState } from 'react';
-import { parseMentionsMarkup } from '~/helpers/utils';
+import { parseMentionsMarkup, reconstructMentions } from '~/helpers/utils';
 import usePost from '~/social/hooks/usePost';
 import usePostByIds from '~/social/hooks/usePostByIds';
 import useSocialMention from '~/social/hooks/useSocialMention';
 
-export const usePostEditor = ({ postId, onSave }: { postId?: string; onSave: () => void }) => {
-  const post = usePost(postId);
+export const usePostEditor = ({ post, onSave }: { post: Amity.Post; onSave: () => void }) => {
   const initialChildrenPosts = usePostByIds(post?.children);
   const { text, markup, mentions, mentionees, metadata, clearAll, onChange, queryMentionees } =
     useSocialMention({
@@ -18,6 +17,7 @@ export const usePostEditor = ({ postId, onSave }: { postId?: string; onSave: () 
         typeof post?.data === 'string' ? post?.data : (post?.data as Amity.ContentDataText)?.text,
         post?.metadata,
       ),
+      remoteMentions: reconstructMentions(post?.metadata, post?.mentionees),
     });
 
   // List of the children posts removed - these will be deleted on save.
@@ -33,15 +33,27 @@ export const usePostEditor = ({ postId, onSave }: { postId?: string; onSave: () 
     setLocalRemovedChildren((prevRemovedChildren) => [...prevRemovedChildren, childPostId]);
   };
 
-  const handleSave = async () => {
-    localRemovedChildren.forEach((childPostId) => {
-      PostRepository.deletePost(childPostId);
-    });
+  const formattedAttachment = (post: Amity.Post) => {
+    if (post.dataType === 'file' || post.dataType === 'image') {
+      return {
+        type: post.dataType,
+        fileId: post.data.fileId,
+      };
+    }
+    if (post.dataType === 'video') {
+      return {
+        type: post.dataType,
+        fileId: post.data.videoFileId.original,
+      };
+    }
+  };
 
+  const handleSave = async () => {
     await PostRepository.updatePost(post.postId, {
       data: { text },
       mentionees,
       metadata,
+      attachments: childrenPosts.map(formattedAttachment),
     });
     clearAll();
     onSave();

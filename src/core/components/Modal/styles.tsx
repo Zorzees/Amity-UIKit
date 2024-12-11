@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { Close } from '~/icons';
 
-export const CloseIcon = styled(Close).attrs<{ icon?: ReactNode }>({ width: 18, height: 18 })`
+export const CloseIcon = styled(Close).attrs<{ icon?: ReactNode }>({ width: 20, height: 20 })`
   padding: 0 6px;
   cursor: pointer;
   margin-left: auto;
@@ -44,9 +44,15 @@ export const ModalWindow = styled.div`
   max-width: 520px;
   min-width: 360px;
   ${({ theme }) => theme.typography.body}
+  color: ${({ theme }) => theme.palette.neutral.main};
 
   &:focus {
     outline: none;
+  }
+
+  @media (max-width: 520px) {
+    width: 95vw;
+    min-width: unset;
   }
 `;
 

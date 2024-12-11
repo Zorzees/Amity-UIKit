@@ -1,0 +1,109 @@
+.createPost {
+  position: relative;
+  display: block;
+  background-color: var(--asc-color-background-default);
+  height: 100%;
+}
+
+.createPost__topBar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--asc-spacing-m1);
+}
+
+.createPost__status {
+  width: calc(100% - 2rem);
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+  display: flex;
+  justify-content: start;
+  padding: unset;
+  font-size: var(--asc-text-font-size-md);
+  gap: 0.75rem;
+  margin: 0 auto 1rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--asc-box-shadow-03);
+  background-color: var(--asc-color-secondary-default);
+  color: var(--asc-color-background-default);
+}
+
+.createPost_infoIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: var(--asc-color-background-default);
+}
+
+.createPost__notiWrap {
+  position: relative;
+  bottom: 6rem;
+}
+
+.createPost__notiWrap[data-item-position='false'] {
+  position: relative;
+  bottom: 11rem;
+}
+
+.createPost__formMediaAttachment {
+  max-height: calc(100% - 6.75rem); /* for form scroll */
+  overflow-y: scroll;
+}
+
+.createPost__formMediaAttachment[data-from-media='false'] {
+  max-height: calc(
+    100% - 14.875rem
+  ); /* 290px including file button for open detail media attachment */
+
+  overflow-y: scroll;
+}
+
+/* vaul */
+
+.drawer__content {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  outline: none;
+}
+
+.mentionTextInput_item {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-height: 12.5rem;
+  overflow-y: scroll;
+  background-color: var(--asc-color-background-default);
+  bottom: var(--asc-mention-bottom, 0);
+}
+
+.drawerContentContainer {
+  position: absolute;
+  box-shadow: var(--asc-box-shadow-04);
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+  display: block;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: var(--asc-color-background-default);
+}
+
+.drawerContentContainer[data-show-detail-media-attachment='false'] {
+  padding: 0.5rem 1rem;
+  bottom: -0.4rem;
+  margin-top: 0.75rem;
+}
+
+.drawerContentContainer[data-show-detail-media-attachment='true'] {
+  bottom: -0.9rem;
+  margin-top: -1rem;
+  padding-bottom: 2rem;
+  padding-top: 0.75rem;
+}
+
+.mentionTextInput_item::-webkit-scrollbar {
+  display: none;
+}

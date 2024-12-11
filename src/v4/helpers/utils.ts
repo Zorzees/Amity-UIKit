@@ -1,7 +1,13 @@
 import { CommunityPostSettings } from '@amityco/ts-sdk';
 import isEmpty from 'lodash/isEmpty';
 
-export type Mentioned = { userId?: string; length: number; index: number; type: string };
+export type Mentioned = {
+  userId?: string;
+  length: number;
+  index: number;
+  type: string;
+  displayName?: string;
+};
 export type Mentionees = (Amity.UserMention | Amity.ChannelMention)[];
 export type Metadata = {
   mentioned?: Mentioned[];
@@ -210,7 +216,6 @@ const SUPPORTED_URL_PROTOCOLS = new Set(['http:', 'https:', 'mailto:', 'sms:', '
 export function sanitizeUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
-    // eslint-disable-next-line no-script-url
     if (!SUPPORTED_URL_PROTOCOLS.has(parsedUrl.protocol)) {
       return 'about:blank';
     }

@@ -19,34 +19,22 @@ export { default as AmityExpandableText } from '~/social/components/Comment/Comm
 export { useSDK as useAmitySDK } from '~/core/hooks/useSDK';
 
 export { AmityUIKitManager } from '~/v4/core/AmityUIKitManager';
-export {
-  CommentTray as AmityCommentTrayComponent,
-  StoryTab as AmityStoryTabComponent,
-} from '~/v4/social/components';
 
-export { ReactionList as AmityReactionList } from '~/v4/social/components/ReactionList';
+// v4 Export only components and pages related to Story feature
 
 import type { ReactionListProps } from '~/v4/social/components/ReactionList';
 
-export type { ReactionListProps as AmityReactionListProps };
-
-// v4 internal use only (Amity Console)
-export {
-  StoryPreview as AmityStoryPreview,
-  StoryPreviewThumbnail as AmityStoryPreviewThumbnail,
-} from './v4/social/internal-components/StoryPreview';
-
 // v4 Social
 export {
-  SocialHomePage as AmitySocialHomePage,
   AmityDraftStoryPage,
   ViewStoryPage as AmityViewStoryPage,
   StoryTargetSelectionPage as AmityStoryTargetSelectionPage,
-  PostDetailPage as AmityPostDetailPage,
-  SocialGlobalSearchPage as AmitySocialGlobalSearchPage,
-  MyCommunitiesSearchPage as AmityMyCommunitiesSearchPage,
-  SelectPostTargetPage as AmityPostTargetSelectionPage,
-  PostComposerPage as AmityPostComposerPage,
 } from '~/v4/social/pages';
+
+export {
+  ReactionList as AmityReactionListComponent,
+  CommentTray as AmityCommentTrayComponent,
+  StoryTab as AmityStoryTabComponent,
+} from '~/v4/social/components/';
 
 export { HomePageTab as AmitySocialHomePageTab } from '~/v4/social/pages/SocialHomePage';
