@@ -12,7 +12,7 @@ import { ConfirmComponent as ConfirmComponentV4 } from '~/v4/core/components/Con
 import ConfigProvider from '~/social/providers/ConfigProvider';
 import Localization from './Localization';
 import buildGlobalTheme from './theme';
-import { UIStyles } from './styles';
+import { UIStyles, LoaderBtn } from './styles';
 import { SDKContext } from '../SDKProvider';
 import { SDKContext as SDKContextV4 } from '~/v4/core/providers/SDKProvider';
 import useUser from '~/core/hooks/useUser';
@@ -87,13 +87,15 @@ const UiKitProvider = ({
 	const stateChangeRef = useRef<(() => void) | null>(null);
 	const disconnectedChangeRef = useRef<(() => void) | null>(null);
 	const currentUser = useUser(userId);
+	const roles = currentUser?.roles ?? [];
 	const sdkContextValue = useMemo(
 		() => ({
 			client: client || null,
 			currentUserId: userId || undefined,
 			userRoles: currentUser?.roles ?? [],
+			displayName: displayName || currentUser?.displayName || '',
 		}),
-		[client, userId, currentUser?.roles],
+		[client, userId, displayName, roles],
 	);
 
 	async function login() {
@@ -161,8 +163,8 @@ const UiKitProvider = ({
 		};
 	}, [userId]);
 
-	if (client == null) return <></>;
-	if (!isConnected) return <></>;
+	if (client == null || !isConnected) return <LoaderBtn />;
+
 
 	return (
 		<QueryClientProvider client={queryClient}>

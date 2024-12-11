@@ -2,13 +2,15 @@ import React, { ReactNode, createContext, useMemo } from 'react';
 import useUser from '../hooks/useUser';
 
 export const SDKContext = createContext<{
-  client?: Amity.Client | null;
-  currentUserId?: string | null;
-  userRoles: string[];
+	client?: Amity.Client | null;
+	currentUserId?: string | null;
+	userRoles: string[];
+	displayName?: string | null;
 }>({
-  client: null,
-  currentUserId: undefined,
-  userRoles: [],
+	client: null,
+	currentUserId: undefined,
+	userRoles: [],
+	displayName: null,
 });
 
 // export const SDKProvider = ({
