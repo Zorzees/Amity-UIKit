@@ -18,6 +18,18 @@ export { default as AmityPostEngagementBar } from '~/social/components/Engagemen
 export { default as AmityExpandableText } from '~/social/components/Comment/CommentText';
 export { useSDK as useAmitySDK } from '~/core/hooks/useSDK';
 
+export { default as AmityHighlight } from '~/core/components/Highlight';
+export { default as AmitySkeleton } from '~/core/components/Skeleton';
+
+export {
+  Name,
+  NameContainer,
+  PrivateIcon,
+  VerifiedIcon,
+} from '~/social/components/community/Name/styles';
+
+export { useCustomComponent as useAmityCustomComponent } from '~/core/providers/CustomComponentsProvider';
+
 export { AmityUIKitManager } from '~/v4/core/AmityUIKitManager';
 
 // v4 Export only components and pages related to Story feature
