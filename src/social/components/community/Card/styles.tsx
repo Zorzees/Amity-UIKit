@@ -10,6 +10,8 @@ export const Container = styled.div`
   border-radius: 8px;
   background: ${({ theme }) => theme.palette.system.background};
   overflow: hidden;
+  min-width: 250px;
+  max-width: calc(50% - 1rem);
 `;
 
 export const Cover = styled.div.withConfig({
